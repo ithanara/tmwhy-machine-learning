@@ -9,15 +9,7 @@ target = 'Status '
 
 X = df[features]
 y = df[target]
-#%%
-X = X.replace({
-    "Yoda":0,
-    "Shaak Ti":1,
-    "Obi-Wan Kenobi":2, 
-    "Aayla Secura":3,
-    "Mace Windu":4
-})
-X
+
 # %%
 from sklearn import tree
 
