@@ -9,6 +9,14 @@ df.head()
 #Transformar tudo em número
 df = df.replace({ "Sim":1, "Não":0})
 
+df['Você se considera uma pessoa feliz?'] = df[
+    'Você se considera uma pessoa feliz?'
+].replace({
+    "sim": 1,
+    "não": 0,
+    "nao": 0
+})
+
 num_vars = [
     'Curte games?',
     'Curte futebol?',
@@ -33,34 +41,119 @@ df_analise[num_vars] = df[num_vars].copy()
 
 df_analise.head()
 # %%
-df_analise['pessoa feliz?'] = df['Você se considera uma pessoa feliz?'].copy()
-df_analise
+df_analise['pessoa feliz'] = df['Você se considera uma pessoa feliz?'].astype(int)
+df_analise['pessoa feliz'] = df[
+    'Você se considera uma pessoa feliz?'
+].astype(int)
 
+df_analise
 #%%
 features = df_analise.columns[:-1].tolist()
 # %%
 from sklearn import tree
+from sklearn import naive_bayes
+from sklearn import linear_model
 
 X = df_analise[features]
-y = df_analise['pessoa feliz?'].astype(int)
+y = df_analise['pessoa feliz'].astype(int)
 
 arvore = tree.DecisionTreeClassifier(random_state=42,
                                      min_samples_leaf=6
                                      )
 arvore.fit(X,y)
 
+naive = naive_bayes.GaussianNB()
+naive.fit(X,y)
+
+reg = linear_model.LogisticRegression(penalty=None, fit_intercept=True)
+reg.fit(X,y)
+
 # %%
-#Testar o modelo
+#Testar o modelo arvore
 arvore_predict = arvore.predict(X)
 arvore_predict
 
-df_predict = df_analise[['pessoa feliz?']]
+df_predict = df_analise[['pessoa feliz']].copy()
 df_predict['predict_arvore'] = arvore_predict
-df_predict
+df_predict['proba_arvore'] = arvore.predict_proba(X)[:,1]
 
-(df_predict['pessoa feliz?'] == df_predict['predict_arvore']).mean()
+print(df_predict)
+#%%
+#Testar o modelo com naive bayes
+naive_predict = naive.predict(X)
+naive_predict
+
+df_predict['predict_naive'] = naive_predict
+df_predict['proba_naive'] = naive.predict_proba(X)[:,1]
+#%%
+#Testar com regressão logistica
+#Testar o modelo com naive bayes
+reg_predict = reg.predict(X)
+reg_predict
+
+df_predict['predict_reg'] = reg_predict
+df_predict['proba_reg'] = reg.predict_proba(X)[:,1]
+#%%
+#Acurácia
+# (df_predict['pessoa feliz'] == df_predict['predict_arvore']).mean()
+# pd.crosstab(df_predict['pessoa feliz'],df_predict['predict_arvore'])
+# (df_predict['pessoa feliz'] ==1).sum()
+
 # %%
-pd.crosstab(df_predict['pessoa feliz?'],df_predict['predict_arvore'])
-# %%
-(df_predict['pessoa feliz?'] ==1).sum()
+#plotar a curva roc (acc = acuracia)
+from sklearn import metrics
+
+acc_arvore = metrics.accuracy_score(df_predict['pessoa feliz'], df_predict['predict_arvore'])
+acc_arvore
+
+precisao_arvore = metrics.precision_score(df_predict['pessoa feliz'], df_predict['predict_arvore'])
+precisao_arvore
+
+recall_arvore = metrics.recall_score(df_predict['pessoa feliz'], df_predict['predict_arvore'])
+recall_arvore
+
+roc_arvore = metrics.roc_curve(df_predict['pessoa feliz'], df_predict['proba_arvore'])
+auc_arvore = metrics.roc_auc_score(df_predict['pessoa feliz'], df_predict['proba_arvore'])
+
+#%%
+acc_naive = metrics.accuracy_score(df_predict['pessoa feliz'], df_predict['predict_naive'])
+acc_naive
+
+precisao_naive = metrics.precision_score(df_predict['pessoa feliz'], df_predict['predict_naive'])
+precisao_naive
+
+recall_naive = metrics.recall_score(df_predict['pessoa feliz'], df_predict['predict_naive'])
+recall_naive
+
+roc_naive = metrics.roc_curve(df_predict['pessoa feliz'], df_predict['proba_naive'])
+auc_naive = metrics.roc_auc_score(df_predict['pessoa feliz'], df_predict['proba_naive'])
+auc_naive
+
+#%%
+acc_reg = metrics.accuracy_score(df_predict['pessoa feliz'], df_predict['predict_reg'])
+acc_reg
+
+precisao_reg = metrics.precision_score(df_predict['pessoa feliz'], df_predict['predict_reg'])
+precisao_reg
+
+recall_reg = metrics.recall_score(df_predict['pessoa feliz'], df_predict['predict_reg'])
+recall_reg
+
+roc_reg = metrics.roc_curve(df_predict['pessoa feliz'], df_predict['proba_reg'])
+auc_reg = metrics.roc_auc_score(df_predict['pessoa feliz'], df_predict['proba_reg'])
+auc_reg
+#%%
+import matplotlib.pyplot as plt
+
+plt.figure(dpi=300)
+
+plt.plot(roc_arvore[0],roc_arvore[1])
+plt.plot(roc_naive[0],roc_naive[1])
+plt.plot(roc_reg[0],roc_reg[1])
+plt.grid(True)
+plt.title("Curva Roc")
+plt.xlabel("1 - especificidade")
+plt.ylabel("Recall")
+
+plt.legend([f"Árvore: {auc_arvore:.2f}",f"naive: {auc_naive:.2f}",f"reg: {auc_reg:.2f}"])
 # %%
