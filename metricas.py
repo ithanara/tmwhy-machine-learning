@@ -45,7 +45,7 @@ X = df_analise[features]
 y = df_analise['pessoa feliz?'].astype(int)
 
 arvore = tree.DecisionTreeClassifier(random_state=42,
-                                     min_samples_leaf=5
+                                     min_samples_leaf=6
                                      )
 arvore.fit(X,y)
 
@@ -61,4 +61,6 @@ df_predict
 (df_predict['pessoa feliz?'] == df_predict['predict_arvore']).mean()
 # %%
 pd.crosstab(df_predict['pessoa feliz?'],df_predict['predict_arvore'])
-#Onde foi que eu errei?
+# %%
+(df_predict['pessoa feliz?'] ==1).sum()
+# %%
