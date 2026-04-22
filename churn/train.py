@@ -1,6 +1,9 @@
 #%%
 import pandas as pd
 
+pd.options.display.max_columns = 500
+pd.options.display.max_rows = 500
+
 df= pd.read_csv("../data/abt_churn.csv", sep=",")
 df.head()
 # %%
@@ -16,6 +19,7 @@ target = 'flagChurn'
 
 X, y = df_train[features], df_train[target]
 # %%
+#Sample
 from sklearn import model_selection
 
 X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y,
@@ -26,4 +30,48 @@ X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y,
 # %%
 print("taxa variável resposta:", y_train.mean())
 print("taxa variável resposta:", y_test.mean())
+# %%
+#Aqui começa o Explore (Análise exploratória dos dados)
+X_train.isna().sum()
+# %%
+#Analise bivariada
+df_analise = X_train.copy()
+df_analise[target]= y_train
+
+sumario = df_analise.groupby(by=target).agg(['mean','median']).T
+sumario
+# %%
+#Diferença absoluta
+sumario['diff_abs'] = sumario[0] - sumario[1]
+sumario['diff_rel'] = sumario[0] / sumario[1]
+sumario.sort_values(by=['diff_rel'], ascending=True)
+
+# %%
+from sklearn import tree
+import matplotlib.pyplot as plt
+
+arvore = tree.DecisionTreeClassifier(random_state= 42, 
+                                     max_depth=5)
+arvore.fit(X_train, y_train)
+
+plt.figure(dpi=300)
+tree.plot_tree(arvore,
+               feature_names=X_train.columns,
+               filled=True,
+               class_names=[str(i) for i in arvore.classes_]
+               )
+# %%
+#Arvore completa
+arvore = tree.DecisionTreeClassifier(random_state= 42)
+arvore.fit(X_train, y_train)
+
+feature_importances = (pd.Series(arvore.feature_importances_, 
+                                index=X_train.columns)
+                                .sort_values(ascending=False)
+                                .reset_index()
+                                )
+feature_importances['acum.'] = feature_importances[0].cumsum()
+#feature_importances[feature_importances[0] > 0.01]
+feature_importances[feature_importances['acum.'] < 0.96]
+
 # %%
