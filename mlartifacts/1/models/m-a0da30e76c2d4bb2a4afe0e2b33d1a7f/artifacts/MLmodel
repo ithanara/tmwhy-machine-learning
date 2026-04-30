@@ -1,0 +1,29 @@
+artifact_path: mlflow-artifacts:/1/models/m-a0da30e76c2d4bb2a4afe0e2b33d1a7f/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.5
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+    skops_trusted_types: null
+is_signature_from_type_hint: false
+mlflow_version: 3.11.1
+model_id: m-a0da30e76c2d4bb2a4afe0e2b33d1a7f
+model_size_bytes: 3182
+model_uuid: m-a0da30e76c2d4bb2a4afe0e2b33d1a7f
+prompts: null
+run_id: f835ef5299ff4af38e8f622d6c5e6b6a
+signature:
+  inputs: '[{"type": "double", "name": "qtdeDiasPrimeiraTransacao", "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2026-04-30 13:54:42.065828'

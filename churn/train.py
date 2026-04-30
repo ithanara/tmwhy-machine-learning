@@ -103,10 +103,15 @@ onehot = encoding.OneHotEncoder(variables=best_features, ignore_format=True)
 from sklearn import linear_model
 from sklearn import naive_bayes
 from sklearn import ensemble
+from sklearn import metrics
+import mlflow
 
-model = linear_model.LogisticRegression(penalty=None,random_state=42,max_iter=1000000)
+#model = linear_model.LogisticRegression(penalty=None,random_state=42,max_iter=1000000)
 #model = naive_bayes.BernoulliNB()
-#model = ensemble.RandomForestClassifier(random_state=42,min_samples_leaf=20,n_jobs=-1,n_estimators=1000)
+model = ensemble.RandomForestClassifier(
+    random_state=42,
+    n_jobs=2,
+    )
 #model = tree.DecisionTreeClassifier(random_state=42, min_samples_leaf=20)
 #model = ensemble.AdaBoostClassifier(random_state=42,n_estimators=500,learning_rate=0.01)
 
@@ -117,18 +122,29 @@ model_pipeline = pipeline.Pipeline(
         ('Model', model)
     ]
 )
-from sklearn import metrics
-import mlflow
 
-mlflow.set_tracking_uri("http://127.0.0.1:5000/")
+params = {
+    "Model__min_samples_leaf":[15,20,25,30,50],
+    "Model__n_estimators":[100,200,500,1000],
+    "Model__criterion":['gini','entropy','log_loss']
+}
+
+
+grid = model_selection.GridSearchCV(model_pipeline, 
+                                    params, 
+                                    cv=3, 
+                                    scoring='roc_auc',
+                                    verbose=4,)
+
+mlflow.set_tracking_uri("http://127.0.0.1:3000/")
 mlflow.set_experiment(experiment_id=1)
 
 with mlflow.start_run(run_name=model.__str__()):
     mlflow.sklearn.autolog()
-    model_pipeline.fit(X_train, y_train)
+    grid.fit(X_train, y_train)
 
-    y_train_predict = model_pipeline.predict(X_train)
-    y_train_proba = model_pipeline.predict_proba(X_train)[:,1]
+    y_train_predict = grid.predict(X_train)
+    y_train_proba = grid.predict_proba(X_train)[:,1]
 
     acc_train = metrics.accuracy_score(y_train, y_train_predict)
     auc_train = metrics.roc_auc_score(y_train, y_train_proba)
@@ -137,8 +153,8 @@ with mlflow.start_run(run_name=model.__str__()):
     print("AUC treino:", auc_train)
 
     #Verificar dados do test
-    y_test_predict = model_pipeline.predict(X_test)
-    y_test_proba = model_pipeline.predict_proba(X_test)[:,1]
+    y_test_predict = grid.predict(X_test)
+    y_test_proba = grid.predict_proba(X_test)[:,1]
 
     acc_test = metrics.accuracy_score(y_test, y_test_predict)
     auc_test = metrics.roc_auc_score(y_test, y_test_proba)
@@ -147,8 +163,8 @@ with mlflow.start_run(run_name=model.__str__()):
     print("AUC teste:", auc_test)
 
     #Ver como fica na OOT
-    y_oot_predict = model_pipeline.predict(oot[features])
-    y_oot_proba = model_pipeline.predict_proba(oot[features])[:,1]
+    y_oot_predict = grid.predict(oot[features])
+    y_oot_proba = grid.predict_proba(oot[features])[:,1]
 
     acc_oot = metrics.accuracy_score(oot[target], y_oot_predict)
     auc_oot = metrics.roc_auc_score(oot[target], y_oot_proba)

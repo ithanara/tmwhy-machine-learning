@@ -1,0 +1,29 @@
+artifact_path: mlflow-artifacts:/1/models/m-0c60fd3bedc14986b7e15671e7b3ce54/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.5
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+    skops_trusted_types: null
+is_signature_from_type_hint: false
+mlflow_version: 3.11.1
+model_id: m-0c60fd3bedc14986b7e15671e7b3ce54
+model_size_bytes: 2443
+model_uuid: m-0c60fd3bedc14986b7e15671e7b3ce54
+prompts: null
+run_id: d9270873818d445e8c380ba067f1b033
+signature:
+  inputs: '[{"type": "long", "name": "qtdeChatMessage", "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2026-04-30 13:55:41.680744'

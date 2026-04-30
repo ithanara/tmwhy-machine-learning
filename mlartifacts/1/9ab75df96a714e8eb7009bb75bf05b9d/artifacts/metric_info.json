@@ -1,0 +1,3 @@
+{
+  "GridSearchCV_score_unknown_dataset": "GridSearchCV.score(X=<DataFrame>, y=y_train)"
+}

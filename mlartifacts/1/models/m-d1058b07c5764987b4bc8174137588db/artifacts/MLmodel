@@ -1,0 +1,29 @@
+artifact_path: mlflow-artifacts:/1/models/m-d1058b07c5764987b4bc8174137588db/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.5
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+    skops_trusted_types: null
+is_signature_from_type_hint: false
+mlflow_version: 3.11.1
+model_id: m-d1058b07c5764987b4bc8174137588db
+model_size_bytes: 2442
+model_uuid: m-d1058b07c5764987b4bc8174137588db
+prompts: null
+run_id: 0d990c558c3541b69a3a9ac775c73889
+signature:
+  inputs: '[{"type": "long", "name": "qtdeTransacoes", "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2026-04-30 13:55:36.794037'

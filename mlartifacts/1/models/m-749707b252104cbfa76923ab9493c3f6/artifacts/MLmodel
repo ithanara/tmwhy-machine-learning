@@ -1,0 +1,29 @@
+artifact_path: mlflow-artifacts:/1/models/m-749707b252104cbfa76923ab9493c3f6/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.5
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+    skops_trusted_types: null
+is_signature_from_type_hint: false
+mlflow_version: 3.11.1
+model_id: m-749707b252104cbfa76923ab9493c3f6
+model_size_bytes: 2451
+model_uuid: m-749707b252104cbfa76923ab9493c3f6
+prompts: null
+run_id: abcf3b3271d94c2da50f7855effdbdcb
+signature:
+  inputs: '[{"type": "double", "name": "qtdeDiasUltimaTransacao", "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2026-04-30 13:54:49.076221'
